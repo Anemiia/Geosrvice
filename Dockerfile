@@ -1,19 +1,25 @@
-FROM golang:1.20 as builder
+FROM golang:1.22-alpine AS builder
 
 WORKDIR /app
+
+RUN apk add --no-cache git ca-certificates && update-ca-certificates
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main .
+RUN go mod tidy
+
+RUN go build -o geoservice main.go
 
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates
-
-COPY --from=builder /app/main /app/main
-
 WORKDIR /app
+
+RUN apk add --no-cache ca-certificates && update-ca-certificates
+
+COPY --from=builder /app/geoservice .
+
+COPY --from=builder /app/docs ./docs
 
 EXPOSE 8080
 
-CMD ["/app/main"]
+CMD ["./geoservice"]

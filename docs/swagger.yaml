@@ -1,0 +1,96 @@
+basePath: /api
+definitions:
+  main.Address:
+    properties:
+      city:
+        type: string
+      street:
+        type: string
+    type: object
+  main.RequestAddressGeocode:
+    properties:
+      lat:
+        type: string
+      lng:
+        type: string
+    type: object
+  main.RequestAddressSearch:
+    properties:
+      query:
+        type: string
+    type: object
+  main.ResponseAddress:
+    properties:
+      addresses:
+        items:
+          $ref: '#/definitions/main.Address'
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a simple GeoService API
+  title: GeoService API
+  version: "1"
+paths:
+  /address/geocode:
+    post:
+      consumes:
+      - json/apllication
+      description: Search address by query
+      parameters:
+      - description: Query
+        in: body
+        name: query
+        required: true
+        schema:
+          $ref: '#/definitions/main.RequestAddressGeocode'
+      produces:
+      - json/apllication
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.ResponseAddress'
+        "400":
+          description: Invalid request format
+          schema:
+            type: string
+        "500":
+          description: Service unavailable
+          schema:
+            type: string
+      summary: Search address
+      tags:
+      - address
+  /address/search:
+    post:
+      consumes:
+      - application/json
+      description: Search address by query
+      parameters:
+      - description: Query
+        in: body
+        name: query
+        required: true
+        schema:
+          $ref: '#/definitions/main.RequestAddressSearch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.ResponseAddress'
+        "400":
+          description: Invalid request format
+          schema:
+            type: string
+        "500":
+          description: Service unavailable
+          schema:
+            type: string
+      summary: Search address
+      tags:
+      - address
+swagger: "2.0"
