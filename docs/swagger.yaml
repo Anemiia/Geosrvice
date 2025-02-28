@@ -7,6 +7,20 @@ definitions:
       street:
         type: string
     type: object
+  main.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  main.RegisterRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   main.RequestAddressGeocode:
     properties:
       lat:
@@ -60,6 +74,8 @@ paths:
           description: Service unavailable
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Search address
       tags:
       - address
@@ -90,7 +106,72 @@ paths:
           description: Service unavailable
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Search address
       tags:
       - address
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates user and returns JWT token
+      parameters:
+      - description: User credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid username or password
+          schema:
+            type: string
+      summary: User login
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account
+      parameters:
+      - description: User credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid request format or user already exists
+          schema:
+            type: string
+        "500":
+          description: Failed to hash password
+          schema:
+            type: string
+      summary: Register new user
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
